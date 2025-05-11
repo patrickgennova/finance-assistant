@@ -1,0 +1,612 @@
+basePath: /api/v1
+definitions:
+  dto.DocumentListResponse:
+    properties:
+      documents:
+        description: Lista de documentos
+        items:
+          $ref: '#/definitions/dto.DocumentResponse'
+        type: array
+      limit:
+        description: Limite de itens por página
+        example: 10
+        type: integer
+      page:
+        description: Página atual
+        example: 1
+        type: integer
+      total:
+        description: Número total de documentos
+        example: 42
+        type: integer
+    type: object
+  dto.DocumentRequest:
+    properties:
+      categories:
+        description: Categorias para classificação (opcional)
+        example:
+        - '["banco"'
+        - '"mensal"]'
+        items:
+          type: string
+        type: array
+      content_type:
+        description: Tipo MIME do arquivo
+        example: application/pdf
+        type: string
+      document_type:
+        description: 'Tipo de documento (ex: extrato bancário, nota fiscal)'
+        example: bank_statement
+        type: string
+      file_content:
+        description: Conteúdo do arquivo em Base64
+        example: JVBERi0xLjUKJYCBgoMKMSAwIG9iago8PC9GaWx0...
+        type: string
+      filename:
+        description: Nome do arquivo original
+        example: extrato_janeiro.pdf
+        type: string
+    required:
+    - content_type
+    - document_type
+    - file_content
+    - filename
+    type: object
+  dto.DocumentResponse:
+    properties:
+      categories:
+        description: Categorias do documento
+        example:
+        - '["banco"'
+        - '"mensal"]'
+        items:
+          type: string
+        type: array
+      content_type:
+        description: Tipo MIME do arquivo
+        example: application/pdf
+        type: string
+      created_at:
+        description: Data de criação
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      document_type:
+        description: Tipo de documento
+        example: bank_statement
+        type: string
+      filename:
+        description: Nome do arquivo
+        example: extrato_janeiro.pdf
+        type: string
+      id:
+        description: ID externo do documento
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      status:
+        description: Status de processamento (pending, processing, processed, failed)
+        example: processing
+        type: string
+      updated_at:
+        description: Data de última atualização
+        example: "2023-01-01T00:00:00Z"
+        type: string
+    type: object
+  dto.DocumentStatusUpdateRequest:
+    properties:
+      status:
+        description: Novo status do documento
+        enum:
+        - pending
+        - processing
+        - processed
+        - failed
+        example: processed
+        type: string
+    required:
+    - status
+    type: object
+  dto.UpdateUserRequest:
+    properties:
+      email:
+        description: Email atualizado (opcional)
+        example: joao.novo@example.com
+        type: string
+      name:
+        description: Nome atualizado do usuário (opcional)
+        example: João Silva Atualizado
+        type: string
+      phone:
+        description: Telefone atualizado (opcional)
+        example: (11) 99999-8888
+        type: string
+    type: object
+  dto.UserListResponse:
+    properties:
+      limit:
+        description: Limite de itens por página
+        example: 10
+        type: integer
+      page:
+        description: Página atual
+        example: 1
+        type: integer
+      total:
+        description: Número total de usuários
+        example: 42
+        type: integer
+      users:
+        description: Lista de usuários
+        items:
+          $ref: '#/definitions/dto.UserResponse'
+        type: array
+    type: object
+  dto.UserRequest:
+    properties:
+      email:
+        description: Email do usuário
+        example: joao.silva@example.com
+        type: string
+      name:
+        description: Nome completo do usuário
+        example: João Silva
+        type: string
+      phone:
+        description: Telefone do usuário (opcional)
+        example: (11) 98765-4321
+        type: string
+    required:
+    - email
+    - name
+    type: object
+  dto.UserResponse:
+    properties:
+      created_at:
+        description: Data de criação
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      email:
+        description: Email do usuário
+        example: joao.silva@example.com
+        type: string
+      id:
+        description: ID externo do usuário
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      name:
+        description: Nome do usuário
+        example: João Silva
+        type: string
+      phone:
+        description: Telefone do usuário
+        example: (11) 98765-4321
+        type: string
+      updated_at:
+        description: Data de atualização
+        example: "2023-01-01T00:00:00Z"
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: seu.email@example.com
+    name: Seu Nome
+    url: http://seusite.com
+  description: API para gerenciamento de finanças pessoais com análise de documentos
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Finance Assistant API
+  version: "1.0"
+paths:
+  /documents:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista paginada de todos os documentos
+      parameters:
+      - description: 'Página atual (padrão: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Limite de itens por página (padrão: 10)'
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DocumentListResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Listar documentos
+      tags:
+      - documents
+  /documents/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove um documento do sistema
+      parameters:
+      - description: ID do documento
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Excluir documento
+      tags:
+      - documents
+    get:
+      consumes:
+      - application/json
+      description: Retorna um documento pelo seu ID
+      parameters:
+      - description: ID do documento
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DocumentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Buscar documento por ID
+      tags:
+      - documents
+  /documents/{id}/status:
+    put:
+      consumes:
+      - application/json
+      description: Atualiza o status de processamento de um documento
+      parameters:
+      - description: ID do documento
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Novo status
+        in: body
+        name: status
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DocumentStatusUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DocumentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Atualizar status do documento
+      tags:
+      - documents
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista paginada de usuários
+      parameters:
+      - description: 'Página atual (padrão: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Limite de itens por página (padrão: 10)'
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserListResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Listar usuários
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo usuário no sistema
+      parameters:
+      - description: Dados do usuário
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Criar usuário
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove um usuário do sistema
+      parameters:
+      - description: ID do usuário
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Excluir usuário
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: Retorna um usuário pelo seu ID externo
+      parameters:
+      - description: ID do usuário
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Buscar usuário por ID
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Atualiza os dados de um usuário existente
+      parameters:
+      - description: ID do usuário
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Dados para atualização
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Atualizar usuário
+      tags:
+      - users
+  /users/{id}/documents:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista paginada de documentos de um usuário específico
+      parameters:
+      - description: ID do usuário
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 'Página atual (padrão: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Limite de itens por página (padrão: 10)'
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DocumentListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Listar documentos de um usuário
+      tags:
+      - documents
+    post:
+      consumes:
+      - application/json
+      description: Envia um novo documento para um usuário
+      parameters:
+      - description: ID do usuário
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Dados do documento
+        in: body
+        name: document
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DocumentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.DocumentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Criar documento
+      tags:
+      - documents
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

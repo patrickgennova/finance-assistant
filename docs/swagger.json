@@ -1,0 +1,873 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API para gerenciamento de finanças pessoais com análise de documentos",
+        "title": "Finance Assistant API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "Seu Nome",
+            "url": "http://seusite.com",
+            "email": "seu.email@example.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/documents": {
+            "get": {
+                "description": "Retorna uma lista paginada de todos os documentos",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "documents"
+                ],
+                "summary": "Listar documentos",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Página atual (padrão: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limite de itens por página (padrão: 10)",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.DocumentListResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/documents/{id}": {
+            "get": {
+                "description": "Retorna um documento pelo seu ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "documents"
+                ],
+                "summary": "Buscar documento por ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID do documento",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.DocumentResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove um documento do sistema",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "documents"
+                ],
+                "summary": "Excluir documento",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID do documento",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/documents/{id}/status": {
+            "put": {
+                "description": "Atualiza o status de processamento de um documento",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "documents"
+                ],
+                "summary": "Atualizar status do documento",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID do documento",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Novo status",
+                        "name": "status",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.DocumentStatusUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.DocumentResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "description": "Retorna uma lista paginada de usuários",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Listar usuários",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Página atual (padrão: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limite de itens por página (padrão: 10)",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserListResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Cria um novo usuário no sistema",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Criar usuário",
+                "parameters": [
+                    {
+                        "description": "Dados do usuário",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "description": "Retorna um usuário pelo seu ID externo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Buscar usuário por ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID do usuário",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Atualiza os dados de um usuário existente",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Atualizar usuário",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID do usuário",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados para atualização",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove um usuário do sistema",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Excluir usuário",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID do usuário",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/documents": {
+            "get": {
+                "description": "Retorna uma lista paginada de documentos de um usuário específico",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "documents"
+                ],
+                "summary": "Listar documentos de um usuário",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID do usuário",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Página atual (padrão: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limite de itens por página (padrão: 10)",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.DocumentListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Envia um novo documento para um usuário",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "documents"
+                ],
+                "summary": "Criar documento",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID do usuário",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados do documento",
+                        "name": "document",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.DocumentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.DocumentResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.DocumentListResponse": {
+            "type": "object",
+            "properties": {
+                "documents": {
+                    "description": "Lista de documentos",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.DocumentResponse"
+                    }
+                },
+                "limit": {
+                    "description": "Limite de itens por página",
+                    "type": "integer",
+                    "example": 10
+                },
+                "page": {
+                    "description": "Página atual",
+                    "type": "integer",
+                    "example": 1
+                },
+                "total": {
+                    "description": "Número total de documentos",
+                    "type": "integer",
+                    "example": 42
+                }
+            }
+        },
+        "dto.DocumentRequest": {
+            "type": "object",
+            "required": [
+                "content_type",
+                "document_type",
+                "file_content",
+                "filename"
+            ],
+            "properties": {
+                "categories": {
+                    "description": "Categorias para classificação (opcional)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"banco\"",
+                        "\"mensal\"]"
+                    ]
+                },
+                "content_type": {
+                    "description": "Tipo MIME do arquivo",
+                    "type": "string",
+                    "example": "application/pdf"
+                },
+                "document_type": {
+                    "description": "Tipo de documento (ex: extrato bancário, nota fiscal)",
+                    "type": "string",
+                    "example": "bank_statement"
+                },
+                "file_content": {
+                    "description": "Conteúdo do arquivo em Base64",
+                    "type": "string",
+                    "example": "JVBERi0xLjUKJYCBgoMKMSAwIG9iago8PC9GaWx0..."
+                },
+                "filename": {
+                    "description": "Nome do arquivo original",
+                    "type": "string",
+                    "example": "extrato_janeiro.pdf"
+                }
+            }
+        },
+        "dto.DocumentResponse": {
+            "type": "object",
+            "properties": {
+                "categories": {
+                    "description": "Categorias do documento",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"banco\"",
+                        "\"mensal\"]"
+                    ]
+                },
+                "content_type": {
+                    "description": "Tipo MIME do arquivo",
+                    "type": "string",
+                    "example": "application/pdf"
+                },
+                "created_at": {
+                    "description": "Data de criação",
+                    "type": "string",
+                    "example": "2023-01-01T00:00:00Z"
+                },
+                "document_type": {
+                    "description": "Tipo de documento",
+                    "type": "string",
+                    "example": "bank_statement"
+                },
+                "filename": {
+                    "description": "Nome do arquivo",
+                    "type": "string",
+                    "example": "extrato_janeiro.pdf"
+                },
+                "id": {
+                    "description": "ID externo do documento",
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                },
+                "status": {
+                    "description": "Status de processamento (pending, processing, processed, failed)",
+                    "type": "string",
+                    "example": "processing"
+                },
+                "updated_at": {
+                    "description": "Data de última atualização",
+                    "type": "string",
+                    "example": "2023-01-01T00:00:00Z"
+                }
+            }
+        },
+        "dto.DocumentStatusUpdateRequest": {
+            "type": "object",
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "description": "Novo status do documento",
+                    "type": "string",
+                    "enum": [
+                        "pending",
+                        "processing",
+                        "processed",
+                        "failed"
+                    ],
+                    "example": "processed"
+                }
+            }
+        },
+        "dto.UpdateUserRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "description": "Email atualizado (opcional)",
+                    "type": "string",
+                    "example": "joao.novo@example.com"
+                },
+                "name": {
+                    "description": "Nome atualizado do usuário (opcional)",
+                    "type": "string",
+                    "example": "João Silva Atualizado"
+                },
+                "phone": {
+                    "description": "Telefone atualizado (opcional)",
+                    "type": "string",
+                    "example": "(11) 99999-8888"
+                }
+            }
+        },
+        "dto.UserListResponse": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "description": "Limite de itens por página",
+                    "type": "integer",
+                    "example": 10
+                },
+                "page": {
+                    "description": "Página atual",
+                    "type": "integer",
+                    "example": 1
+                },
+                "total": {
+                    "description": "Número total de usuários",
+                    "type": "integer",
+                    "example": 42
+                },
+                "users": {
+                    "description": "Lista de usuários",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.UserResponse"
+                    }
+                }
+            }
+        },
+        "dto.UserRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "name"
+            ],
+            "properties": {
+                "email": {
+                    "description": "Email do usuário",
+                    "type": "string",
+                    "example": "joao.silva@example.com"
+                },
+                "name": {
+                    "description": "Nome completo do usuário",
+                    "type": "string",
+                    "example": "João Silva"
+                },
+                "phone": {
+                    "description": "Telefone do usuário (opcional)",
+                    "type": "string",
+                    "example": "(11) 98765-4321"
+                }
+            }
+        },
+        "dto.UserResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "Data de criação",
+                    "type": "string",
+                    "example": "2023-01-01T00:00:00Z"
+                },
+                "email": {
+                    "description": "Email do usuário",
+                    "type": "string",
+                    "example": "joao.silva@example.com"
+                },
+                "id": {
+                    "description": "ID externo do usuário",
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                },
+                "name": {
+                    "description": "Nome do usuário",
+                    "type": "string",
+                    "example": "João Silva"
+                },
+                "phone": {
+                    "description": "Telefone do usuário",
+                    "type": "string",
+                    "example": "(11) 98765-4321"
+                },
+                "updated_at": {
+                    "description": "Data de atualização",
+                    "type": "string",
+                    "example": "2023-01-01T00:00:00Z"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}
